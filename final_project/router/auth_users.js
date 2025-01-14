@@ -18,24 +18,21 @@ const authenticatedUser = (username, password) => {
 regd_users.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  if (!username || !password) {
-      return res.status(400).json({ message: "Username and password are required" });
-  }
+    if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
+    }
 
-  if (!authenticatedUser(username, password)) {
-      return res.status(401).json({ message: "Invalid username or password" });
-  }
+    if (!authenticatedUser(username, password)) {
+        return res.status(401).json({ message: "Invalid username or password" });
+    }
 
-  // Generate a JWT token
-  const token = jwt.sign({ username }, "fingerprint_customer", { expiresIn: "1h" });
+    // Generate a JWT
+    const token = jwt.sign({ username }, "fingerprint_customer", { expiresIn: "1h" });
 
-  // Save the token in the session
-  if (!req.session) {
-      return res.status(500).json({ message: "Session not initialized" });
-  }
+    // Store the JWT in the session
+    req.session.token = token;
 
-  req.session.token = token; // Store the token in the session
-  res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful", token });
 });
 
 // Add a book review
